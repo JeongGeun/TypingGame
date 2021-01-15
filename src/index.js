@@ -1,3 +1,4 @@
+import './index.css'
 
 let el =document.querySelector('#app')
 el.innerHTML ="안녕하세요"

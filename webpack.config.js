@@ -6,8 +6,8 @@ const path = require('path');
 module.exports = {
     entry: './src/index.js',
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: '/dist/',
+        path: path.resolve(__dirname, 'public'),
+        publicPath: '/public/',
         filename: 'bundle.js'
     },
     module: {
@@ -15,13 +15,19 @@ module.exports = {
             {
                 test: /\.js$/,
                 include: path.join(__dirname),
-                exclude: /(node_modules)|(dist)/,
+                exclude: /(node_modules)|(public)/,
                 use: {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env']
                     }
                 }
+            },
+            {
+                test : /\.css$/,
+                //include: path.join(__dirname),
+                use : ['style-loader','css-loader'],
+                exclude: /(node_modules)|(public)/
             }
         ]
     },
