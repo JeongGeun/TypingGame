@@ -7,7 +7,6 @@ module.exports = {
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'public'),
-        publicPath: '/public/',
         filename: 'bundle.js'
     },
     module: {
@@ -25,7 +24,6 @@ module.exports = {
             },
             {
                 test : /\.css$/,
-                //include: path.join(__dirname),
                 use : ['style-loader','css-loader'],
                 exclude: /(node_modules)|(public)/
             }
@@ -36,7 +34,9 @@ module.exports = {
         hot : true
     },
     plugins: [ new CleanWebpackPlugin(),
-               new HtmlWebpackPlugin(), 
+               new HtmlWebpackPlugin({
+                   template: './src/index.html'
+               }), 
                new webpack.HotModuleReplacementPlugin() 
     ],
 
