@@ -1,4 +1,6 @@
 import './index.css'
+import {routes,onNavigate} from './router'
+
 
 let state = "Ready"
 let isPassed = false
@@ -8,7 +10,15 @@ let timeInterval
 let checkInterval
 let arr=[]
 let arrnum=0
-
+console.log(routes['/complete'])
+console.log(1111)
+function init()
+{
+   
+    document.getElementById("second").innerText=""
+    document.getElementById('word').value=""
+    getData()
+}
 function getData(){
     const url ="https://my-json-server.typicode.com/kakaopay-fe/resources/words";
     const config ={
@@ -29,11 +39,13 @@ function setScore(data){
     
 }
 
-function startGame(){
+function startGame(event){
     const division1 =document.getElementById('division1')
     const division2 =document.getElementById('division2')
     const startBtn = document.getElementById('startBtn')
-    
+ 
+    init()
+
     if(state==="Ready")
     {
         state="Started"
@@ -49,7 +61,6 @@ function startGame(){
         division2.style.display=  "none"
         startBtn.innerText="시작"
         clearInterval(timeInterval)
-        getData()
     }
 }
 
@@ -69,10 +80,13 @@ function countDown()
 {
     let sec =parseInt(document.getElementById("second").innerText)
     const score = document.getElementById('totalScore')
+    const app = document.getElementById('app')
 
     if(!isPlaying)
     {
         clearInterval(timeInterval)
+        
+        onNavigate('/complete',app)
         return
     }
 
@@ -138,6 +152,7 @@ function checkMatch(event)
     }
 }
 
+
 document.getElementById("startBtn").onclick=startGame
 document.getElementById("word").addEventListener("keypress",checkMatch)
-getData()
+init()
