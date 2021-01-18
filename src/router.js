@@ -8,17 +8,27 @@ export const routes = {
     '/complete' : CView
 }
 
-export function onNavigate(pathname,rootDiv) {
+export function onNavigate(data,pathname,rootDiv) {
     window.history.pushState(
-        {},
+        data,
         pathname,
         window.location.origin + pathname
       )
-      console.log(routes[pathname])
       rootDiv.innerHTML = routes[pathname]
+      if(pathname==='/complete')
+      setCompleteView(data['score'],data['time'])
+      
 }
 
-window.onpopstate = (rootDiv) => {
-    rootDiv.innerHTML = routes[window.location.pathname]
+function setCompleteView(score,time){
+    document.getElementById('ctotalScore').innerText=score
+    document.getElementById('avgTime').innerText=time
+    document.getElementById('restart').addEventListener('click',function(){
+        history.back()
+    })
+}
+
+export function setHomeView(){
+  
 }
 

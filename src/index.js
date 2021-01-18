@@ -1,22 +1,23 @@
 import './index.css'
-import {routes,onNavigate} from './router'
+import {routes,onNavigate,setHomeView} from './router'
 
 
 let state = "Ready"
 let isPassed = false
 let isPlaying  = false
-//let time = 0
 let timeInterval
-let checkInterval
 let arr=[]
 let arrnum=0
-console.log(routes['/complete'])
-console.log(1111)
+let avgTime=0
+
+
 function init()
 {
-   
     document.getElementById("second").innerText=""
     document.getElementById('word').value=""
+    avgTime=0
+    document.getElementById("startBtn").onclick=startGame
+    document.getElementById("word").addEventListener("keypress",checkMatch) 
     getData()
 }
 function getData(){
@@ -66,14 +67,13 @@ function startGame(event){
 
 function run(time,text)
 {
-    //if(isPlaying) return
     isPlaying=true
     isPassed =false
     document.getElementById('word').focus()
     document.getElementById("second").innerText=time
     document.getElementById('target').innerText=text
     timeInterval = setInterval(countDown,1000);
-    //checkInterval = setInterval(checkStatus,100);
+   
 }
 
 function countDown()
@@ -85,23 +85,31 @@ function countDown()
     if(!isPlaying)
     {
         clearInterval(timeInterval)
-        
-        onNavigate('/complete',app)
+        const success_time = parseInt(score.innerText)===0? 0 : avgTime/parseInt(score.innerText)
+        const data ={
+            score : score.innerText,
+            time : success_time.toFixed(2)
+        }
+        onNavigate(data,'/complete',app)
         return
     }
 
     sec>0 ? sec--: isPassed=true
-    if(isPassed && sec===0)
+    avgTime++
+    if(isPassed)
     {
-        score.innerText = parseInt(score.innerText)-1
-        arrnum++;
-        if(arrnum>=arr.length)
+        if(sec===0)
         {
-            isPlaying=false
-            return
+            score.innerText = parseInt(score.innerText)-1
+            arrnum++;
+            if(arrnum>=arr.length)
+            {
+                isPlaying=false
+                return
+            }
+            document.getElementById("second").innerText=arr[arrnum]['second']
+            document.getElementById('target').innerText=arr[arrnum]['text']        
         }
-        document.getElementById("second").innerText=arr[arrnum]['second']
-        document.getElementById('target').innerText=arr[arrnum]['text']
         isPassed=false
     }
     else
@@ -109,20 +117,6 @@ function countDown()
         document.getElementById("second").innerText=sec
     }
 }
-
-// function checkStatus()
-// {
-//     const sec =parseInt(document.getElementById("second").innerText)
-//     const score = document.getElementById('totalScore')
-//     if(isPassed && sec===0)
-//     {
-//         clearInterval(checkInterval)
-//         score.innerText = parseInt(score.innerText)-1
-//         document.getElementById("second").innerText=arr[arrnum]['second']
-//         document.getElementById('target').innerText=arr[arrnum]['text']
-//     }
-
-// }
 
 function checkMatch(event)
 {
@@ -142,7 +136,7 @@ function checkMatch(event)
             document.getElementById("second").innerText=arr[arrnum]['second']
             document.getElementById('target').innerText=arr[arrnum]['text']
             word.value=""
-           // isPlaying=false
+
         }
         else
         {
@@ -153,6 +147,15 @@ function checkMatch(event)
 }
 
 
-document.getElementById("startBtn").onclick=startGame
-document.getElementById("word").addEventListener("keypress",checkMatch)
-init()
+
+
+window.onpageshow= function(){
+    const app= document.getElementById("app")
+    app.innerHTML =routes[window.location.pathname]
+    init()
+}
+
+window.onpopstate = () => {
+    app.innerHTML = routes[window.location.pathname]
+    init()
+}
