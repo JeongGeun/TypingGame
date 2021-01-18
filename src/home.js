@@ -12,4 +12,4 @@ export const home = `<div class="game-info">
     <input type="text" id="word"/>
 </div>
 </div>
-<div><button id="startBtn">시작</button></div>`
+<div><button id="startBtn">시작</button></div>`;
