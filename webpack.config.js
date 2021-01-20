@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-  devtool : 'inline-source-map',
+  devtool: 'inline-source-map',
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -20,11 +20,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env'],
-            plugins: [
-              [
-                "@babel/plugin-proposal-class-properties"
-              ]
-          ]
+            plugins: [['@babel/plugin-proposal-class-properties']],
           },
         },
       },

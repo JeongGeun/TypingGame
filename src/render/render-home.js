@@ -1,68 +1,69 @@
 import ParentRender from './parent-render';
 
-class RenderHomeView extends ParentRender{
-    constructor(view){
-        super(view);
-    }
+class RenderHomeView extends ParentRender {
+  constructor(view) {
+    super(view);
+  }
 
-    declareHTMLelement = () =>{
-        this.score=document.getElementById('totalScore');
-        this.second=document.getElementById('second');
-        this.word =document.getElementById('word');
-        this.target = document.getElementById('target');
-        this.startBtn =document.getElementById('startBtn');
-        this.div1 = document.getElementById('division1');
-        this.div2 = document.getElementById('division2');
-    }
-    renderView = () =>{
-        this.renderInitView();
-        this.declareHTMLelement();
-    }
+  declareHTMLelement = () => {
+    this.score = document.getElementById('totalScore');
+    this.second = document.getElementById('second');
+    this.word = document.getElementById('word');
+    this.target = document.getElementById('target');
+    this.startBtn = document.getElementById('startBtn');
+    this.div1 = document.getElementById('division1');
+    this.div2 = document.getElementById('division2');
+  };
 
-    showGameView = (second,text) =>{
-        this.div1.style.display='none';
-        this.div2.style.display='block';
-        this.startBtn.innerText='초기화';
-        this.second.innerText=second;
-        this.target.innerText=text;
-    };
+  renderView = () => {
+    this.renderInitView();
+    this.declareHTMLelement();
+  };
 
-    hideGameView = () =>{
-        this.div1.style.display='block';
-        this.div2.style.display='none';
-        this.startBtn.innerText='시작';
-    };
+  showGameView = (second, text) => {
+    this.div1.style.display = 'none';
+    this.div2.style.display = 'block';
+    this.startBtn.innerText = '초기화';
+    this.second.innerText = second;
+    this.target.innerText = text;
+  };
 
-    initializeSecondAndWord = () =>{
-        this.second.innerText ='';
-        this.word.innerText = '';
-    };
-    
-    decreaseSecond =() =>{
-        this.second.innerText = parseInt(this.second.innerText)-1;
-    };
+  hideGameView = () => {
+    this.div1.style.display = 'block';
+    this.div2.style.display = 'none';
+    this.startBtn.innerText = '시작';
+  };
 
-    decreaseScore =() =>{
-        this.score.innerText = parseInt(this.score.innerText)-1;
-    };
+  initializeSecondAndWord = () => {
+    this.second.innerText = '';
+    this.word.innerText = '';
+  };
 
-    renderNextWordAndSecond = (second,text) =>{
-        this.second.innerText=second;
-        this.target.innerText=text;
-    };
+  decreaseSecond = () => {
+    this.second.innerText = parseInt(this.second.innerText) - 1;
+  };
 
-    clearWords = () =>{
-        this.word.value=''
-    };
+  decreaseScore = () => {
+    this.score.innerText = parseInt(this.score.innerText) - 1;
+  };
 
-    setScore = (score) =>{
-        this.score.innerText=score;
-    };
-    getStartBtnElement = () => this.startBtn;
-    getWordElement = () => this.word;
-    getSecondElement = () =>this.second;
-    getTargetElement = () =>this.target;
-    getScoreElement = () => this.score;
+  renderNextWordAndSecond = (second, text) => {
+    this.second.innerText = second;
+    this.target.innerText = text;
+  };
+
+  clearWords = () => {
+    this.word.value = '';
+  };
+
+  setScore = score => {
+    this.score.innerText = score;
+  };
+  getStartBtnElement = () => this.startBtn;
+  getWordElement = () => this.word;
+  getSecondElement = () => this.second;
+  getTargetElement = () => this.target;
+  getScoreElement = () => this.score;
 }
 
 export default RenderHomeView;
