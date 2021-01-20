@@ -30,7 +30,7 @@ class RenderHomeView extends ParentRender{
     hideGameView = () =>{
         this.div1.style.display='block';
         this.div2.style.display='none';
-        this.innerText='시작';
+        this.startBtn.innerText='시작';
     };
 
     initializeSecondAndWord = () =>{

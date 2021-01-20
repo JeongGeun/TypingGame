@@ -32,6 +32,7 @@ class HomeController extends ParentController{
     }
 
     addHomeEvent = () =>{
+        console.log("이벤트")
         this.render.getStartBtnElement().addEventListener('click',this.startGame);
         this.render.getWordElement().addEventListener('keypress', this.checkMatch);
     };
@@ -44,8 +45,7 @@ class HomeController extends ParentController{
     };
   
     startGame = () =>{
-        this.initializeGame();
-
+        console.log(this.state)
         if(this.state==='Ready'){
             this.state = 'Started';
             this.isPlaying = true;
@@ -116,6 +116,7 @@ class HomeController extends ParentController{
     isFinish = () => {
         if(this.dataIndex>=this.data.length){
             this.isPlaying = false;
+            this.state='Ready'
             return true;
         }
         return false;
