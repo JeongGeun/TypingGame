@@ -1,12 +1,7 @@
-import { CompleteView } from './complete';
-import { home } from './home';
+import { CompleteView } from './view/complete';
+import { home } from './view/home';
 const CView = CompleteView;
 const HView = home;
-
-export const routes = {
-  '/': HView,
-  '/complete': CView,
-};
 
 export function onNavigate(data, pathname, rootDiv) {
   window.history.pushState(data, pathname, window.location.origin + pathname);
@@ -22,3 +17,43 @@ function setCompleteView(score, time) {
     history.back();
   });
 }
+
+class Router{
+
+  constructor(routes){
+    this.routes=routes;
+
+    this.setPath();
+    this.onNavigate();
+    this.onPopstate();
+  }
+
+  setPath = () =>{
+    for(let path in this.routes)
+    {
+      this.routes[path].setRoute(this);
+    }
+  };
+
+  onNavigate = () =>{
+    for(let path in this.routes)
+    {
+      if(path===window.location.pathname)
+      {
+          this.routes[path].callRenderService();
+          return; 
+      }
+    }
+  };
+
+  onPopstate = () =>{
+    window.addEventListener("popstate",onNavigate)
+  }
+
+  changePath = (message,pathname) =>{
+    window.history.pushState(message,pathname, window.location.origin + pathname);
+    this.onNavigate();
+  };
+}
+
+export default Router;

@@ -1,4 +1,4 @@
-export const home = `<div class="game-info">
+export const HomeView = `<div class="game-info">
 <div id="time"><b>남은 시간: <span id="second"></span>초</b></div>
 <div id="score"><b>점수: <span id="totalScore"></span>점</b></div>
 </div>
