@@ -1,5 +1,6 @@
 import ParentController from './parent-controller';
 
+// 완료 화면의 이벤트를 제어하는 controller
 class CompleteController extends ParentController {
   constructor(render) {
     super(render);
@@ -11,9 +12,9 @@ class CompleteController extends ParentController {
   };
 
   addCompleteEvent = () => {
-    this.render.getRestartBtn().addEventListener('click', this.wayTogoHome);
+    this.render.getRestartBtn().addEventListener('click', this.goToHomePath);
   };
-  wayTogoHome = () => {
+  goToHomePath = () => {
     this.route.changePath({}, '/');
   };
 }

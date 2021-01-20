@@ -1,5 +1,6 @@
 import ParentController from './parent-controller';
 
+//게임 화면에서 일어나는 타이머, 인풋 입력 체크, 게임 종료 체크 등과 같은 기능을 제공
 class HomeController extends ParentController {
   constructor(render) {
     super(render);
@@ -8,6 +9,7 @@ class HomeController extends ParentController {
     this.isPlaying = false;
     this.dataIndex = 0;
     this.avgTime = 0;
+    this.typingTime = 0;
   }
 
   callRenderService = () => {
@@ -39,12 +41,13 @@ class HomeController extends ParentController {
   initializeGame = () => {
     this.getData();
     this.render.initializeSecondAndWord();
+    this.render.clearWords();
     this.avgTime = 0;
     this.dataIndex = 0;
   };
 
   startGame = () => {
-    console.log(this.state);
+    this.initializeGame();
     if (this.state === 'Ready') {
       this.state = 'Started';
       this.isPlaying = true;
@@ -85,13 +88,12 @@ class HomeController extends ParentController {
       this.route.changePath(message, '/complete');
       return;
     }
-
+    console.log(this.avgTime);
     sec > 0 ? sec-- : (this.isPassed = true);
-    this.avgTime++;
-    if (this.isPassed) {
-      if (sec == 0) {
-        this.render.decreaseScore();
 
+    if (this.isPassed) {
+      if (sec <= 0) {
+        this.render.decreaseScore();
         this.dataIndex++;
         if (this.isFinish()) return;
 
@@ -99,6 +101,8 @@ class HomeController extends ParentController {
           this.data[this.dataIndex]['second'],
           this.data[this.dataIndex]['text'],
         );
+      } else {
+        this.avgTime += parseInt(this.data[this.dataIndex]['second']) - sec;
       }
       this.isPassed = false;
     } else {
