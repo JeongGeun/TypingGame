@@ -1,3 +1,5 @@
+
+//각 Path에 맞는 controller를 설정하고 렌더링해주는 클래스
 class Router {
   constructor(routes) {
     this.routes = routes;

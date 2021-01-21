@@ -40,7 +40,7 @@ class RenderHomeView extends ParentRender {
   };
 
   decreaseSecond = () => {
-    this.second.innerText = parseInt(this.second.innerText) - 1;
+    this.second.innerText = (parseFloat(this.second.innerText)- 0.1).toFixed(2);
   };
 
   decreaseScore = () => {

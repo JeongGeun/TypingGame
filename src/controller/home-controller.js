@@ -10,6 +10,7 @@ class HomeController extends ParentController {
     this.dataIndex = 0;
     this.avgTime = 0;
     this.typingTime = 0;
+    this.targetTime = 0;
   }
 
   callRenderService = () => {
@@ -52,6 +53,7 @@ class HomeController extends ParentController {
       this.state = 'Started';
       this.isPlaying = true;
       this.isPassed = false;
+      this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
       this.render.showGameView(
         this.data[this.dataIndex]['second'],
         this.data[this.dataIndex]['text'],
@@ -66,7 +68,7 @@ class HomeController extends ParentController {
   };
 
   startCountDown = () => {
-    this.timeInterval = setInterval(this.countDown, 1000);
+    this.timeInterval = setInterval(this.countDown, 100);
   };
 
   endCountDown = () => {
@@ -74,9 +76,8 @@ class HomeController extends ParentController {
   };
 
   countDown = () => {
-    let sec = parseInt(this.render.getSecondElement().innerText);
+  
     let score = parseInt(this.render.getScoreElement().innerText);
-
     if (!this.isPlaying) {
       const success_time = score === 0 ? 0 : this.avgTime / score;
       this.endCountDown();
@@ -88,24 +89,29 @@ class HomeController extends ParentController {
       this.route.changePath(message, '/complete');
       return;
     }
-    console.log(this.avgTime);
-    sec > 0 ? sec-- : (this.isPassed = true);
+   
+    if (!this.isPassed) {
+      this.typingTime < this.targetTime ? this.typingTime+=0.1 : (this.isPassed=true)
+    }
 
     if (this.isPassed) {
-      if (sec <= 0) {
+      if (this.typingTime >= this.targetTime) {
         this.render.decreaseScore();
-        this.dataIndex++;
-        if (this.isFinish()) return;
-
-        this.render.renderNextWordAndSecond(
-          this.data[this.dataIndex]['second'],
-          this.data[this.dataIndex]['text'],
-        );
       } else {
-        this.avgTime += parseInt(this.data[this.dataIndex]['second']) - sec;
+        this.avgTime += this.typingTime;
       }
+      this.dataIndex++;
+      if (this.isFinish()) return;
+
+      this.render.renderNextWordAndSecond(
+        this.data[this.dataIndex]['second'],
+        this.data[this.dataIndex]['text'],
+      );
+      this.typingTime = 0;
+      this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
       this.isPassed = false;
     } else {
+      if (this.typingTime < this.targetTime)
       this.render.decreaseSecond();
     }
   };
@@ -114,12 +120,6 @@ class HomeController extends ParentController {
     if (event.keyCode === 13) {
       if (this.render.getWordElement().value === this.render.getTargetElement().innerText) {
         this.isPassed = true;
-        this.dataIndex++;
-        if (this.isFinish()) return;
-        this.render.renderNextWordAndSecond(
-          this.data[this.dataIndex]['second'],
-          this.data[this.dataIndex]['text'],
-        );
       }
       this.render.clearWords();
     }
