@@ -51,6 +51,10 @@ body {
   text-align: center;
 }
 
+#buttonDiv {
+  text-align: center;
+}
+
 b {
   font-size: 25px;
 }

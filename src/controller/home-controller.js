@@ -10,6 +10,13 @@ import ParentController from './parent-controller';
     4. 다음문제로 넘어가고 다음문제가 없을 경우 완료화면으로 넘어간다.
  */
 
+ /*
+    리뷰
+    1. 데이터가 들어오기 전에 호출하면 에러가 남
+    2. enter 후에 바로 단어들 띄우게 함
+    3. 데이터를 store를 해서 상태관리를 위한 파일을 분리
+ */
+
 class HomeController extends ParentController {
   constructor(render) {
     super(render);
@@ -35,7 +42,8 @@ class HomeController extends ParentController {
     };
     fetch(url, config)
       .then(res => res.json())
-      .then(data => this.setData(data));
+      .then(data => this.setData(data))
+      .then(this.render.hideLoadingImage);
   };
 
   setData = data => {
@@ -49,7 +57,13 @@ class HomeController extends ParentController {
   };
   //게임 시작 시에 html요소들을 초기화한다.
   initializeGame = () => {
-    this.getData();
+    
+    if (this.data === undefined) {
+      this.render.showLoadingImage();
+      this.getData();
+    } else { 
+      this.render.setScore(this.data.length);
+    }
     this.render.initializeSecondAndWord();
     this.render.clearWords();
     this.avgTime = 0;
@@ -87,7 +101,7 @@ class HomeController extends ParentController {
     이름 : countDown
     설명
     1. isPlaying이 false이면 게임이 종료되었다는 의미이미로 complete화면으로 최종점수와 평균시간을 보낸다.
-    2. isPassed가 false이면 아직 문제를 풀지 못했다는 의미이므로 typingTime을 0.1초 증가시키고 typingTime이 0보다 작아질 경우 isPassed를 true로 변경한다.
+    2. isPassed가 false이면 아직 문제를 풀지 못했다는 의미이므로 typingTime을 0.1초 증가시키고 typingTime이 targetTime보다 크면 isPassed를 true로 변경한다.
     3. isPassed가 true일때
       3.1) typingTime이 targetTime보다 클 경우 스코어를 1점 차감한다
       3.2) typingTime이 targetTine보다 작을 경우 평균시간에 typingTime을 더한다.
@@ -120,7 +134,7 @@ class HomeController extends ParentController {
       }
       this.dataIndex++;
       if (this.isFinish()) return;
-
+      this.render.clearWords();
       this.render.renderNextWordAndSecond(
         this.data[this.dataIndex]['second'],
         this.data[this.dataIndex]['text'],

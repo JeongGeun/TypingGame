@@ -12,4 +12,4 @@ export const HomeView = `<div class="game-info">
     <input type="text" id="word"/>
 </div>
 </div>
-<div><button id="startBtn">시작</button></div>`;
+<div id ="buttonDiv"><button id="startBtn"></button></div>`;

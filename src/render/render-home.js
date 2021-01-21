@@ -1,4 +1,5 @@
 import ParentRender from './parent-render';
+import LoadingImage from '../images/loading.gif';
 
 class RenderHomeView extends ParentRender {
   constructor(view) {
@@ -18,8 +19,16 @@ class RenderHomeView extends ParentRender {
   renderView = () => {
     this.renderInitView();
     this.declareHTMLelement();
+    this.addLoadingImage();
   };
 
+  addLoadingImage = () => { 
+    const loadingImage = new Image();
+    loadingImage.src = LoadingImage;
+    loadingImage.id = 'loadingImage';
+    this.startBtn.appendChild(loadingImage);
+    this.LoadingImage = document.getElementById('loadingImage');
+  };
   showGameView = (second, text) => {
     this.div1.style.display = 'none';
     this.div2.style.display = 'block';
@@ -59,6 +68,18 @@ class RenderHomeView extends ParentRender {
   setScore = score => {
     this.score.innerText = score;
   };
+
+  showLoadingImage = () => { 
+    this.LoadingImage.style.display = 'inline-block;';
+    this.startBtn.disabled = true;
+  };
+
+  hideLoadingImage = () => { 
+    this.LoadingImage.style.display = 'none';
+    this.startBtn.disabled = false;
+    this.startBtn.innerText = '시작';
+  };
+
   getStartBtnElement = () => this.startBtn;
   getWordElement = () => this.word;
   getSecondElement = () => this.second;

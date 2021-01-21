@@ -29,6 +29,14 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
         exclude: /(node_modules)|(public)/,
       },
+      {
+        test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader',
+        options: {
+          name: 'images/[hash].[ext]',
+          limit: 10000,
+        },
+      }
     ],
   },
   devServer: {
