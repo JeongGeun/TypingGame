@@ -10,7 +10,7 @@ import ParentController from './parent-controller';
     4. 다음문제로 넘어가고 다음문제가 없을 경우 완료화면으로 넘어간다.
  */
 
- /*
+/*
     리뷰
     1. 데이터가 들어오기 전에 호출하면 에러가 남
     2. enter 후에 바로 단어들 띄우게 함
@@ -59,10 +59,10 @@ class HomeController extends ParentController {
   initializeGame = () => {
     
     if (this.data === undefined) {
-      this.render.showLoadingImage();
       this.getData();
-    } else { 
+    } else {
       this.render.setScore(this.data.length);
+      this.render.hideLoadingImage();
     }
     this.render.initializeSecondAndWord();
     this.render.clearWords();
@@ -109,16 +109,8 @@ class HomeController extends ParentController {
     4. isPassed가 false이면 시간을 0.1초씩 감소시킨다.
   */
   countDown = () => {
-    let score = parseInt(this.render.getScoreElement().innerText);
     if (!this.isPlaying) {
-      const success_time = score === 0 ? 0 : this.avgTime / score;
-      this.endCountDown();
-      const message = {
-        score: score,
-        time: success_time.toFixed(2),
-      };
-
-      this.route.changePath(message, '/complete');
+      this.sendDataToComplete();
       return;
     }
 
@@ -127,21 +119,7 @@ class HomeController extends ParentController {
     }
 
     if (this.isPassed) {
-      if (this.typingTime >= this.targetTime) {
-        this.render.decreaseScore();
-      } else {
-        this.avgTime += this.typingTime;
-      }
-      this.dataIndex++;
-      if (this.isFinish()) return;
-      this.render.clearWords();
-      this.render.renderNextWordAndSecond(
-        this.data[this.dataIndex]['second'],
-        this.data[this.dataIndex]['text'],
-      );
-      this.typingTime = 0;
-      this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
-      this.isPassed = false;
+      this.passToNextWords();
     } else {
       if (this.typingTime < this.targetTime) this.render.decreaseSecond();
     }
@@ -151,6 +129,8 @@ class HomeController extends ParentController {
     if (event.keyCode === 13) {
       if (this.render.getWordElement().value === this.render.getTargetElement().innerText) {
         this.isPassed = true;
+        this.passToNextWords();
+        if (this.isFinish()) this.sendDataToComplete();
       }
       this.render.clearWords();
     }
@@ -163,6 +143,36 @@ class HomeController extends ParentController {
       return true;
     }
     return false;
+  };
+
+  sendDataToComplete = () => {
+    let score = parseInt(this.render.getScoreElement().innerText);
+    const success_time = score === 0 ? 0 : this.avgTime / score;
+    this.endCountDown();
+    const message = {
+      score: score,
+      time: success_time.toFixed(2),
+    };
+
+    this.route.changePath(message, '/complete');
+  };
+
+  passToNextWords = () => {
+    if (this.typingTime >= this.targetTime) {
+      this.render.decreaseScore();
+    } else {
+      this.avgTime += this.typingTime;
+    }
+    this.dataIndex++;
+    if (this.isFinish()) return;
+    this.render.clearWords();
+    this.render.renderNextWordAndSecond(
+      this.data[this.dataIndex]['second'],
+      this.data[this.dataIndex]['text'],
+    );
+    this.typingTime = 0;
+    this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
+    this.isPassed = false;
   };
 }
 

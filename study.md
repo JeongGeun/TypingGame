@@ -41,3 +41,20 @@
 
 
 
+## 9. Reducer가 순수함수인 이유
+
+```javascript
+function counter(state = initialState, action) { 
+  switch(action.type) { 
+    case types.INCREMENT: return { ...state, number: state.number + 1 }; 
+    case types.DECREMENT: return { ...state, number: state.number - 1 }; 
+    default: return state; 
+  } 
+}
+```
+
+
+
+- spread operator를 통해 기존의 state값을 복사한 뒤 number라는 항목으로 state반환
+- redux의 변경 감지 알고리즘은 state가 변경됐는지를 검사하기 위해 state객체의 주소를 비교함.
+

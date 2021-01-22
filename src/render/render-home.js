@@ -22,12 +22,13 @@ class RenderHomeView extends ParentRender {
     this.addLoadingImage();
   };
 
-  addLoadingImage = () => { 
+  addLoadingImage = () => {
     const loadingImage = new Image();
     loadingImage.src = LoadingImage;
     loadingImage.id = 'loadingImage';
     this.startBtn.appendChild(loadingImage);
     this.LoadingImage = document.getElementById('loadingImage');
+    this.initLoadingButton();
   };
   showGameView = (second, text) => {
     this.div1.style.display = 'none';
@@ -69,12 +70,15 @@ class RenderHomeView extends ParentRender {
     this.score.innerText = score;
   };
 
-  showLoadingImage = () => { 
+  initLoadingButton = () => { 
     this.LoadingImage.style.display = 'inline-block;';
     this.startBtn.disabled = true;
   };
+  showLoadingImage = () => {
+    this.LoadingImage.style.display = 'inline-block;';
+  };
 
-  hideLoadingImage = () => { 
+  hideLoadingImage = () => {
     this.LoadingImage.style.display = 'none';
     this.startBtn.disabled = false;
     this.startBtn.innerText = '시작';
