@@ -18,15 +18,8 @@ import ParentController from './parent-controller';
  */
 
 class HomeController extends ParentController {
-  constructor(render) {
-    super(render);
-    this.state = 'Ready'; // 시작 / 초기화 버튼의 분기가 되는 변수
-    this.isPassed = false; // 각 문제문제마다 pass/fail 여부를 알려주는 변수
-    this.isPlaying = false; //모든 문제를 다 완료했는지 파악하는 변수 => 아직 게임 중이라면 true : 모든 문제를 완료해다면 false
-    this.dataIndex = 0; // 데이터 배열의 index , 다음문제로 넘어가기 위해 필요한 변수
-    this.avgTime = 0; // 평균 시간, complete화면으로 내보낼 변수
-    this.typingTime = 0; // 한 문제를 맞추는 데 걸리는 시간
-    this.targetTime = 0; // 서버에서 불러온 데이터 안에 각 문제마다 정해진 시간
+  constructor(store,render) {
+    super(store,render);
   }
   //home화면을 렌더링하고 이벤트를 등록한다.
   callRenderService = () => {
@@ -35,7 +28,7 @@ class HomeController extends ParentController {
     this.initializeGame();
   };
   //서버에서 데이터를 가져옴
-  getData = () => {
+  fetchData = () => {
     const url = 'https://my-json-server.typicode.com/kakaopay-fe/resources/words';
     const config = {
       method: 'get',
@@ -47,7 +40,8 @@ class HomeController extends ParentController {
   };
 
   setData = data => {
-    this.data = data;
+    this.store.setData(data);
+    this.store.setScore(data.length);
     this.render.setScore(data.length);
   };
   //"시작", "초기화" 버튼의 클릭이벤트와 인풋입력을 감지하여 pass/fail을 결정하는 이벤트를 등록한다.
@@ -58,33 +52,34 @@ class HomeController extends ParentController {
   //게임 시작 시에 html요소들을 초기화한다.
   initializeGame = () => {
     
-    if (this.data === undefined) {
-      this.getData();
+    if (this.store.getData().length === 0) {
+      this.fetchData();
     } else {
-      this.render.setScore(this.data.length);
+      this.store.setScore(this.store.getData().length);
+      this.render.setScore(this.store.getData().length);
       this.render.hideLoadingImage();
     }
     this.render.initializeSecondAndWord();
     this.render.clearWords();
-    this.avgTime = 0;
-    this.dataIndex = 0;
+    this.store.initGame();
   };
   //초기값을 세팅해주고 게임을 시작한다.
   startGame = () => {
     this.initializeGame();
-    if (this.state === 'Ready') {
-      this.state = 'Started';
-      this.isPlaying = true;
-      this.isPassed = false;
-      this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
+    if (this.store.getState() === 'Ready') {
+      this.store.setState('Started');
+      this.store.setisPlaying(true);
+      this.store.setisPassed(false);
+    
+      this.store.setTargetTime (parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2));
       this.render.showGameView(
-        this.data[this.dataIndex]['second'],
-        this.data[this.dataIndex]['text'],
+        this.store.getData()[this.store.getDataIndex()]['second'],
+        this.store.getData()[this.store.getDataIndex()]['text'],
       );
       this.render.getWordElement().focus();
       this.startCountDown();
     } else {
-      this.state = 'Ready';
+      this.store.setState('Ready');
       this.render.hideGameView();
       this.endCountDown();
     }
@@ -109,26 +104,26 @@ class HomeController extends ParentController {
     4. isPassed가 false이면 시간을 0.1초씩 감소시킨다.
   */
   countDown = () => {
-    if (!this.isPlaying) {
+    if (!this.store.getisPlaying()) {
       this.sendDataToComplete();
       return;
     }
 
-    if (!this.isPassed) {
-      this.typingTime < this.targetTime ? (this.typingTime += 0.1) : (this.isPassed = true);
+    if (!this.store.getisPassed()) {
+      this.store.getTypingTime() < this.store.getTargetTime() ? (this.store.increaseTypingTime()) : (this.store.setisPassed(true));
     }
 
-    if (this.isPassed) {
+    if (this.store.getisPassed()) {
       this.passToNextWords();
     } else {
-      if (this.typingTime < this.targetTime) this.render.decreaseSecond();
+      if (this.store.getTypingTime() < this.store.getTargetTime()) this.render.decreaseSecond();
     }
   };
   //문제가 맞았을 경우 isPassed를 true로 만든다.
   checkMatch = event => {
     if (event.keyCode === 13) {
       if (this.render.getWordElement().value === this.render.getTargetElement().innerText) {
-        this.isPassed = true;
+        this.store.setisPassed(true);
         this.passToNextWords();
         if (this.isFinish()) this.sendDataToComplete();
       }
@@ -137,17 +132,17 @@ class HomeController extends ParentController {
   };
 
   isFinish = () => {
-    if (this.dataIndex >= this.data.length) {
-      this.isPlaying = false;
-      this.state = 'Ready';
+    if (this.store.getDataIndex() >= this.store.getData().length) {
+      this.store.setisPlaying(false);
+      this.store.setState('Ready');
       return true;
     }
     return false;
   };
 
   sendDataToComplete = () => {
-    let score = parseInt(this.render.getScoreElement().innerText);
-    const success_time = score === 0 ? 0 : this.avgTime / score;
+    let score = this.store.getScore();
+    const success_time = score === 0 ? 0 : this.store.getAvgTime() / score;
     this.endCountDown();
     const message = {
       score: score,
@@ -158,21 +153,22 @@ class HomeController extends ParentController {
   };
 
   passToNextWords = () => {
-    if (this.typingTime >= this.targetTime) {
+    if (this.store.getTypingTime() >= this.store.getTargetTime()) {
       this.render.decreaseScore();
+      this.store.decreaseScore();
     } else {
-      this.avgTime += this.typingTime;
+      this.store.increaseAvgTime(this.store.getTypingTime());
     }
-    this.dataIndex++;
+    this.store.increaseDataIndex();
     if (this.isFinish()) return;
     this.render.clearWords();
     this.render.renderNextWordAndSecond(
-      this.data[this.dataIndex]['second'],
-      this.data[this.dataIndex]['text'],
+      this.store.getData()[this.store.getDataIndex()]['second'],
+      this.store.getData()[this.store.getDataIndex()]['text'],
     );
-    this.typingTime = 0;
-    this.targetTime = parseFloat(this.data[this.dataIndex]['second']).toFixed(2);
-    this.isPassed = false;
+    this.store.initTypingTime();
+    this.store.setTargetTime(parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2));
+    this.store.setisPassed(false);
   };
 }
 
