@@ -2,7 +2,7 @@ class Store {
   constructor() {
     this.data = [];
     this.score = 0;
-    this.second = 0;
+    this.second = 0; // 화면에 보여지는 시간
     this.state = 'Ready'; // 시작 / 초기화 버튼의 분기가 되는 변수
     this.isPassed = false; // 각 문제문제마다 pass/fail 여부를 알려주는 변수
     this.isPlaying = false; //모든 문제를 다 완료했는지 파악하는 변수 => 아직 게임 중이라면 true : 모든 문제를 완료해다면 false
@@ -46,6 +46,10 @@ class Store {
     this.targetTime = time;
   };
 
+  setSecond = second => {
+    this.second = second;
+  };
+
   increaseAvgTime = time => {
     this.avgTime = this.avgTime + time;
   };
@@ -61,9 +65,14 @@ class Store {
   decreaseScore = () => {
     this.score = this.score - 1;
   };
+
+  decreaseSecond = () => {
+    this.second = this.second - 0.1;
+  };
   getData = () => this.data;
   getScore = () => this.score;
   getState = () => this.state;
+  getSecond = () => this.second;
   getisPassed = () => this.isPassed;
   getisPlaying = () => this.isPlaying;
   getDataIndex = () => this.dataIndex;

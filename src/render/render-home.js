@@ -49,14 +49,6 @@ class RenderHomeView extends ParentRender {
     this.word.innerText = '';
   };
 
-  decreaseSecond = () => {
-    this.second.innerText = (parseFloat(this.second.innerText) - 0.1).toFixed(2);
-  };
-
-  decreaseScore = () => {
-    this.score.innerText = parseInt(this.score.innerText) - 1;
-  };
-
   renderNextWordAndSecond = (second, text) => {
     this.second.innerText = second;
     this.target.innerText = text;
@@ -68,6 +60,10 @@ class RenderHomeView extends ParentRender {
 
   setScore = score => {
     this.score.innerText = score;
+  };
+
+  setSecond = second => {
+    this.second.innerText = second.toFixed(2);
   };
 
   initLoadingButton = () => {

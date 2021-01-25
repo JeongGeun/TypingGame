@@ -62,7 +62,7 @@ class HomeController extends ParentController {
     this.render.clearWords();
     this.store.initGame();
   };
-  //초기값을 세팅해주고 게임을 시작한다.
+  //초기 html요소를 세팅해주고 게임을 시작한다.
   startGame = () => {
     this.initializeGame();
     if (this.store.getState() === 'Ready') {
@@ -70,9 +70,8 @@ class HomeController extends ParentController {
       this.store.setisPlaying(true);
       this.store.setisPassed(false);
 
-      this.store.setTargetTime(
-        parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2),
-      );
+      this.store.setTargetTime(this.store.getData()[this.store.getDataIndex()]['second']);
+      this.store.setSecond(this.store.getData()[this.store.getDataIndex()]['second']);
       this.render.showGameView(
         this.store.getData()[this.store.getDataIndex()]['second'],
         this.store.getData()[this.store.getDataIndex()]['text'],
@@ -96,19 +95,14 @@ class HomeController extends ParentController {
   /*
     이름 : countDown
     설명
-    1. isPlaying이 false이면 게임이 종료되었다는 의미이미로 complete화면으로 최종점수와 평균시간을 보낸다.
-    2. isPassed가 false이면 아직 문제를 풀지 못했다는 의미이므로 typingTime을 0.1초 증가시키고 typingTime이 targetTime보다 크면 isPassed를 true로 변경한다.
-    3. isPassed가 true일때
-      3.1) typingTime이 targetTime보다 클 경우 스코어를 1점 차감한다
-      3.2) typingTime이 targetTine보다 작을 경우 평균시간에 typingTime을 더한다.
-      3.3) 다음문제를 진행하고 다음문제가 없을경우 isPlaying과 state변수를 초기화 시킨다.
-    4. isPassed가 false이면 시간을 0.1초씩 감소시킨다.
+    1. isPassed가 false이면 아직 문제를 풀지 못했다는 의미이므로 typingTime을 0.1초 증가시키고 typingTime이 targetTime보다 크면 isPassed를 true로 변경한다.
+    2. isPassed가 true일때
+      2.1) typingTime이 targetTime보다 클 경우 스코어를 1점 차감한다
+      2.2) typingTime이 targetTime보다 작을 경우 평균시간에 typingTime을 더한다.
+      2.3) 다음문제를 진행하고 다음문제가 없을경우 isPlaying과 state변수를 초기화 시키고 게임을 종료시킨다.
+    3. isPassed가 false이면 시간을 0.1초씩 감소시킨다.
   */
   countDown = () => {
-    if (!this.store.getisPlaying()) {
-      this.sendDataToComplete();
-      return;
-    }
 
     if (!this.store.getisPassed()) {
       this.store.getTypingTime() < this.store.getTargetTime()
@@ -119,34 +113,42 @@ class HomeController extends ParentController {
     if (this.store.getisPassed()) {
       this.passToNextWords();
     } else {
-      if (this.store.getTypingTime() < this.store.getTargetTime()) this.render.decreaseSecond();
+      if (this.store.getTypingTime() < this.store.getTargetTime()) {
+        this.store.decreaseSecond();
+        this.render.setSecond(this.store.getSecond());
+      }
     }
   };
-  //문제가 맞았을 경우 isPassed를 true로 만든다.
+  //문제가 맞았을 경우 isPassed를 true로 만들고 다음 단어로 넘어가는 함수를 실행한다.
   checkMatch = event => {
     if (event.keyCode === 13) {
       if (this.render.getWordElement().value === this.render.getTargetElement().innerText) {
         this.store.setisPassed(true);
         this.passToNextWords();
-        if (this.isFinish()) this.sendDataToComplete();
       }
       this.render.clearWords();
     }
   };
-
+  /*
+    모듈명 : isFinish
+    설명 : dataIndex가 총 데이터의 길이를 넘어갈 경우 남은 단어가 없다고 판단하고 interval 종료 및 게임을 종료 시킨다.
+  */
   isFinish = () => {
     if (this.store.getDataIndex() >= this.store.getData().length) {
       this.store.setisPlaying(false);
       this.store.setState('Ready');
+      this.endCountDown();
       return true;
     }
     return false;
   };
-
+  /*
+    모듈명 : sendDataToComplete
+    설명 : 완료화면으로 라우팅을 담당. 더 이상 남은 단어들이 없을 경우에 실행되어 평균 시간과 총 점수를 보낸다. 
+  */
   sendDataToComplete = () => {
     let score = this.store.getScore();
     const success_time = score === 0 ? 0 : this.store.getAvgTime() / score;
-    this.endCountDown();
     const message = {
       score: score,
       time: success_time.toFixed(2),
@@ -154,25 +156,31 @@ class HomeController extends ParentController {
 
     this.route.changePath(message, '/complete');
   };
-
+  /*
+    모듈명 : passToNextWords
+    설명 : 단어를 맞추거나 시간이 지났을 경우 다음 단어로 넘어가는 것에 대한 처리를 담당한다.
+    만약, 더 이상 남은 단어들이 없다면 interval을 종료한다.
+  */
   passToNextWords = () => {
     if (this.store.getTypingTime() >= this.store.getTargetTime()) {
-      this.render.decreaseScore();
       this.store.decreaseScore();
+      this.render.setScore(this.store.getScore());
     } else {
       this.store.increaseAvgTime(this.store.getTypingTime());
     }
     this.store.increaseDataIndex();
-    if (this.isFinish()) return;
+    if (this.isFinish()) {
+      this.sendDataToComplete();
+      return;
+    }
     this.render.clearWords();
+    this.store.setSecond(this.store.getData()[this.store.getDataIndex()]['second']);
     this.render.renderNextWordAndSecond(
       this.store.getData()[this.store.getDataIndex()]['second'],
       this.store.getData()[this.store.getDataIndex()]['text'],
     );
     this.store.initTypingTime();
-    this.store.setTargetTime(
-      parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2),
-    );
+    this.store.setTargetTime(this.store.getData()[this.store.getDataIndex()]['second']);
     this.store.setisPassed(false);
   };
 }
