@@ -21,12 +21,12 @@ window.onpageshow = () => {
   // routes object에 직접 접근해서 view를 가져오기 보다 router에 view를 가져오는 함수를 마련해서 하는게 좋을 듯합니다.
   // pathname에 routes에 정의되지 않는 pathname이 오는 경우는 undefined를 표시합니다, => Q. url 직접접근을 막는다는 뜻인가요?
 
-  const store = new Store();  
+  const store = new Store();
   const renderHome = new RenderHomeView(HomeView);
-  const homeController = new HomeController(store,renderHome);
+  const homeController = new HomeController(store, renderHome);
 
   const renderComplete = new RenderCompleteView(CompleteView);
-  const completeController = new CompleteController(store,renderComplete);
+  const completeController = new CompleteController(store, renderComplete);
 
   const route = new Router({
     '/': homeController,

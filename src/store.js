@@ -1,76 +1,75 @@
 class Store {
-    constructor() {
-        this.data = [];
-        this.score = 0;
-        this.second = 0;
-        this.state = 'Ready'; // 시작 / 초기화 버튼의 분기가 되는 변수
-        this.isPassed = false; // 각 문제문제마다 pass/fail 여부를 알려주는 변수
-        this.isPlaying = false; //모든 문제를 다 완료했는지 파악하는 변수 => 아직 게임 중이라면 true : 모든 문제를 완료해다면 false
-        this.dataIndex = 0; // 데이터 배열의 index , 다음문제로 넘어가기 위해 필요한 변수
-        this.avgTime = 0; // 평균 시간, complete화면으로 내보낼 변수
-        this.typingTime = 0; // 한 문제를 맞추는 데 걸리는 시간
-        this.targetTime = 0; // 서버에서 불러온 데이터 안에 각 문제마다 정해진 시간
-    };
+  constructor() {
+    this.data = [];
+    this.score = 0;
+    this.second = 0;
+    this.state = 'Ready'; // 시작 / 초기화 버튼의 분기가 되는 변수
+    this.isPassed = false; // 각 문제문제마다 pass/fail 여부를 알려주는 변수
+    this.isPlaying = false; //모든 문제를 다 완료했는지 파악하는 변수 => 아직 게임 중이라면 true : 모든 문제를 완료해다면 false
+    this.dataIndex = 0; // 데이터 배열의 index , 다음문제로 넘어가기 위해 필요한 변수
+    this.avgTime = 0; // 평균 시간, complete화면으로 내보낼 변수
+    this.typingTime = 0; // 한 문제를 맞추는 데 걸리는 시간
+    this.targetTime = 0; // 서버에서 불러온 데이터 안에 각 문제마다 정해진 시간
+  }
 
-    initGame = () => { 
-        this.dataIndex = 0;
-        this.avgTime = 0;
-        this.typingTime = 0;
-    };
+  initGame = () => {
+    this.dataIndex = 0;
+    this.avgTime = 0;
+    this.typingTime = 0;
+  };
 
-    initTypingTime = () => { 
-        this.typingTime = 0;
-    };
+  initTypingTime = () => {
+    this.typingTime = 0;
+  };
 
-    setData = data => {
-        this.data = data;
-    };
-    
-    setScore = score => { 
-        this.score = score;
-    };
+  setData = data => {
+    this.data = data;
+  };
 
-    setState = state => { 
-        this.state = state;
-    };
+  setScore = score => {
+    this.score = score;
+  };
 
-    setisPassed = isPassed => { 
-        this.isPassed = isPassed;
-    };
+  setState = state => {
+    this.state = state;
+  };
 
-    setisPlaying = isPlaying => { 
-        this.isPlaying = isPlaying;
-    };
+  setisPassed = isPassed => {
+    this.isPassed = isPassed;
+  };
 
-    setTargetTime = (time) => { 
-        this.targetTime = time;
-    }; 
+  setisPlaying = isPlaying => {
+    this.isPlaying = isPlaying;
+  };
 
-    increaseAvgTime = (time) => { 
-        this.avgTime = this.avgTime + time;
-    };
+  setTargetTime = time => {
+    this.targetTime = time;
+  };
 
-    increaseTypingTime = () => { 
-        this.typingTime = this.typingTime + 0.1;
-    };
+  increaseAvgTime = time => {
+    this.avgTime = this.avgTime + time;
+  };
 
-    increaseDataIndex = () => { 
-        this.dataIndex = this.dataIndex + 1;
-    };
+  increaseTypingTime = () => {
+    this.typingTime = this.typingTime + 0.1;
+  };
 
-    decreaseScore = () => { 
-        this.score = this.score - 1;
-    };
-    getData = () => this.data;
-    getScore = () => this.score;
-    getState = () => this.state;
-    getisPassed = () => this.isPassed;
-    getisPlaying = () => this.isPlaying;
-    getDataIndex = () => this.dataIndex;
-    getAvgTime = () => this.avgTime;
-    getTypingTime = () => this.typingTime;
-    getTargetTime = () => this.targetTime;
+  increaseDataIndex = () => {
+    this.dataIndex = this.dataIndex + 1;
+  };
 
+  decreaseScore = () => {
+    this.score = this.score - 1;
+  };
+  getData = () => this.data;
+  getScore = () => this.score;
+  getState = () => this.state;
+  getisPassed = () => this.isPassed;
+  getisPlaying = () => this.isPlaying;
+  getDataIndex = () => this.dataIndex;
+  getAvgTime = () => this.avgTime;
+  getTypingTime = () => this.typingTime;
+  getTargetTime = () => this.targetTime;
 }
 
 export default Store;

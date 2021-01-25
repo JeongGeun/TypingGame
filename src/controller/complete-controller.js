@@ -2,8 +2,8 @@ import ParentController from './parent-controller';
 
 // 완료 화면의 이벤트를 제어하는 controller
 class CompleteController extends ParentController {
-  constructor(store,render) {
-    super(store,render);
+  constructor(store, render) {
+    super(store, render);
   }
 
   callRenderService = () => {

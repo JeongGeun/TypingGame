@@ -70,7 +70,7 @@ class RenderHomeView extends ParentRender {
     this.score.innerText = score;
   };
 
-  initLoadingButton = () => { 
+  initLoadingButton = () => {
     this.LoadingImage.style.display = 'inline-block;';
     this.startBtn.disabled = true;
   };

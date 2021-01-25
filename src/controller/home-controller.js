@@ -18,8 +18,8 @@ import ParentController from './parent-controller';
  */
 
 class HomeController extends ParentController {
-  constructor(store,render) {
-    super(store,render);
+  constructor(store, render) {
+    super(store, render);
   }
   //home화면을 렌더링하고 이벤트를 등록한다.
   callRenderService = () => {
@@ -51,7 +51,6 @@ class HomeController extends ParentController {
   };
   //게임 시작 시에 html요소들을 초기화한다.
   initializeGame = () => {
-    
     if (this.store.getData().length === 0) {
       this.fetchData();
     } else {
@@ -70,8 +69,10 @@ class HomeController extends ParentController {
       this.store.setState('Started');
       this.store.setisPlaying(true);
       this.store.setisPassed(false);
-    
-      this.store.setTargetTime (parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2));
+
+      this.store.setTargetTime(
+        parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2),
+      );
       this.render.showGameView(
         this.store.getData()[this.store.getDataIndex()]['second'],
         this.store.getData()[this.store.getDataIndex()]['text'],
@@ -110,7 +111,9 @@ class HomeController extends ParentController {
     }
 
     if (!this.store.getisPassed()) {
-      this.store.getTypingTime() < this.store.getTargetTime() ? (this.store.increaseTypingTime()) : (this.store.setisPassed(true));
+      this.store.getTypingTime() < this.store.getTargetTime()
+        ? this.store.increaseTypingTime()
+        : this.store.setisPassed(true);
     }
 
     if (this.store.getisPassed()) {
@@ -167,7 +170,9 @@ class HomeController extends ParentController {
       this.store.getData()[this.store.getDataIndex()]['text'],
     );
     this.store.initTypingTime();
-    this.store.setTargetTime(parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2));
+    this.store.setTargetTime(
+      parseFloat(this.store.getData()[this.store.getDataIndex()]['second']).toFixed(2),
+    );
     this.store.setisPassed(false);
   };
 }
