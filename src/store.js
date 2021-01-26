@@ -22,6 +22,9 @@ class Store {
     this.typingTime = 0;
   };
 
+  // javascript 스펙 중 getter, setter가 있습니다.
+  // https://mygumi.tistory.com/161
+  // 좀더 사용하기 편할 꺼에요.
   setData = data => {
     this.data = data;
   };

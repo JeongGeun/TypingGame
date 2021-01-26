@@ -21,6 +21,9 @@ window.onpageshow = () => {
   // routes object에 직접 접근해서 view를 가져오기 보다 router에 view를 가져오는 함수를 마련해서 하는게 좋을 듯합니다.
   // pathname에 routes에 정의되지 않는 pathname이 오는 경우는 undefined를 표시합니다, => Q. url 직접접근을 막는다는 뜻인가요?
 
+  // 이건 사견이지만, 만약 이서비스가 확장을 한다면 여기에 모든 routing 정보들을 기입할텐데요.
+  // 여기서 생성해서 Router에 넘겨주기보다, Router안에서 각 controller들을 생성해서 사용하고,
+  // 각 View는 Controller에 종속적이니 애초에 Controller안에서 import해서 사용해도 좋을 듯합니다.
   const store = new Store();
   const renderHome = new RenderHomeView(HomeView);
   const homeController = new HomeController(store, renderHome);
