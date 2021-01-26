@@ -20,12 +20,12 @@ import ParentController from './parent-controller';
 class HomeController extends ParentController {
   // render 는 동사이기 때문에 this.render.renderView 와 같이 사용될 때 의미가 모호해질 수 있습니다.
   // render보다는 RenderHomeView 를 생성해서 전달했기 때문에 view라는 단어가 좀더 나아 보입니다.
-  constructor(store, render) {
-    super(store, render);
+  constructor(store, view) {
+    super(store, view);
   }
   //home화면을 렌더링하고 이벤트를 등록한다.
   callRenderService = () => {
-    this.render.renderView();
+    this.view.renderView();
     this.addHomeEvent();
     this.initializeGame();
   };
@@ -38,56 +38,58 @@ class HomeController extends ParentController {
     fetch(url, config)
       .then(res => res.json())
       .then(data => this.setData(data))
-      .then(this.render.hideLoadingImage);
+      .then(this.view.hideLoadingImage);
   };
 
   setData = data => {
-    this.store.setData(data);
-    this.store.setScore(data.length);
-    this.render.setScore(data.length);
+    this.store.data=data;
+    this.store.score=data.length;
+    this.view.setScore(data.length);
   };
   //"시작", "초기화" 버튼의 클릭이벤트와 인풋입력을 감지하여 pass/fail을 결정하는 이벤트를 등록한다.
   addHomeEvent = () => {
-    this.render.getStartBtnElement().addEventListener('click', this.startGame);
-    this.render.getWordElement().addEventListener('keypress', this.checkMatch);
+    this.view.getStartBtnElement().addEventListener('click', this.startGame);
+    this.view.getWordElement().addEventListener('keypress', this.checkMatch);
   };
   //게임 시작 시에 html요소들을 초기화한다.
   initializeGame = () => {
-    if (this.store.getData().length === 0) {
+    
+    if (this.store.data.length === 0) {
       this.fetchData();
     } else {
-      this.store.setScore(this.store.getData().length);
-      this.render.setScore(this.store.getData().length);
-      this.render.hideLoadingImage();
+      this.store.score = this.store.data.length;
+      this.view.setScore(this.store.data.length);
+      this.view.hideLoadingImage();
     }
-    this.render.initializeSecondAndWord();
-    this.render.clearWords();
+    this.view.initializeSecondAndWord();
+    this.view.clearWords();
     this.store.initGame();
   };
   //초기 html요소를 세팅해주고 게임을 시작한다.
   startGame = () => {
     this.initializeGame();
-
+    const state = this.store.state;
     // state에 해당하는 string은 const로 따로 빼서 정의를 하고 변수로 세팅해주는 것이 좀더 안전합니다.
-    if (this.store.getState() === 'Ready') {
-      this.store.setState('Started');
-      this.store.setisPlaying(true);
-      this.store.setisPassed(false);
+    if (state === 'Ready') {
+      this.store.state='Started';
+      this.store.isPlaying=true;
+      this.store.isPassed=false;
 
       // 여기도 마찬가지이지만 변수의 property도 고정된 string이기 때문에 const로 정의를 해서 사용하는 것이 좋습니다.
       // 더욱이 second, text는 store에서 사용되는 것들이니 일관성을 유지하기 위해서는 이 변수들을 Store에 정의를 해두고,
       // store를 가져다 쓰는 쪽에서 이 변수도 가져와서 사용하는 것이 더욱 안전합니다.
-      this.store.setTargetTime(this.store.getData()[this.store.getDataIndex()]['second']);
-      this.store.setSecond(this.store.getData()[this.store.getDataIndex()]['second']);
-      this.render.showGameView(
-        this.store.getData()[this.store.getDataIndex()]['second'],
-        this.store.getData()[this.store.getDataIndex()]['text'],
+      
+      this.store.targetTime=this.store.data[this.store.dataIndex]['second'];
+      this.store.second=this.store.data[this.store.dataIndex]['second'];
+      this.view.showGameView(
+        this.store.data[this.store.dataIndex]['second'],
+        this.store.data[this.store.dataIndex]['text'],
       );
-      this.render.getWordElement().focus();
+      this.view.getWordElement().focus();
       this.startCountDown();
     } else {
-      this.store.setState('Ready');
-      this.render.hideGameView();
+      this.store.state='Ready';
+      this.view.hideGameView();
       this.endCountDown();
     }
   };
@@ -112,29 +114,29 @@ class HomeController extends ParentController {
   countDown = () => {
     // 함수 이름을 정의를 할때에는 case를 잘 맞추는 것이 좋습니다.
     // camelCase이니 getisPassed 보다는 getIsPassed가 가독성이 더욱 좋습니다.
-    if (!this.store.getisPassed()) {
-      this.store.getTypingTime() < this.store.getTargetTime()
+    if (!this.store.isPassed) {
+      this.store.typingTime < this.store.targetTime
         ? this.store.increaseTypingTime()
-        : this.store.setisPassed(true);
+        : this.store.isPassed=true;
     }
 
-    if (this.store.getisPassed()) {
+    if (this.store.isPassed) {
       this.passToNextWords();
     } else {
-      if (this.store.getTypingTime() < this.store.getTargetTime()) {
+      if (this.store.typingTime < this.store.targetTime) {
         this.store.decreaseSecond();
-        this.render.setSecond(this.store.getSecond());
+        this.view.setSecond(this.store.second);
       }
     }
   };
   //문제가 맞았을 경우 isPassed를 true로 만들고 다음 단어로 넘어가는 함수를 실행한다.
   checkMatch = event => {
     if (event.keyCode === 13) {
-      if (this.render.getWordElement().value === this.render.getTargetElement().innerText) {
-        this.store.setisPassed(true);
+      if (this.view.getWordElement().value === this.view.getTargetElement().innerText) {
+        this.store.isPassed=true;
         this.passToNextWords();
       }
-      this.render.clearWords();
+      this.view.clearWords();
     }
   };
   /*
@@ -142,9 +144,9 @@ class HomeController extends ParentController {
     설명 : dataIndex가 총 데이터의 길이를 넘어갈 경우 남은 단어가 없다고 판단하고 interval 종료 및 게임을 종료 시킨다.
   */
   isFinish = () => {
-    if (this.store.getDataIndex() >= this.store.getData().length) {
-      this.store.setisPlaying(false);
-      this.store.setState('Ready');
+    if (this.store.dataIndex >= this.store.data.length) {
+      this.store.isPlaying=false;
+      this.store.state='Ready';
       this.endCountDown();
       return true;
     }
@@ -155,14 +157,14 @@ class HomeController extends ParentController {
     설명 : 완료화면으로 라우팅을 담당. 더 이상 남은 단어들이 없을 경우에 실행되어 평균 시간과 총 점수를 보낸다. 
   */
   sendDataToComplete = () => {
-    let score = this.store.getScore();
-    const success_time = score === 0 ? 0 : this.store.getAvgTime() / score;
+    let score = this.store.score;
+    const success_time = score === 0 ? 0 : this.store.avgTime / score;
     const message = {
       score: score,
       time: success_time.toFixed(2),
     };
 
-    this.route.changePath(message, '/complete');
+    this.route.changePath('/complete',message);
   };
   /*
     모듈명 : passToNextWords
@@ -170,26 +172,26 @@ class HomeController extends ParentController {
     만약, 더 이상 남은 단어들이 없다면 interval을 종료한다.
   */
   passToNextWords = () => {
-    if (this.store.getTypingTime() >= this.store.getTargetTime()) {
+    if (this.store.typingTime >= this.store.targetTime) {
       this.store.decreaseScore();
-      this.render.setScore(this.store.getScore());
+      this.view.setScore(this.store.getScore());
     } else {
-      this.store.increaseAvgTime(this.store.getTypingTime());
+      this.store.increaseAvgTime(this.store.typingTime);
     }
     this.store.increaseDataIndex();
     if (this.isFinish()) {
       this.sendDataToComplete();
       return;
     }
-    this.render.clearWords();
-    this.store.setSecond(this.store.getData()[this.store.getDataIndex()]['second']);
-    this.render.renderNextWordAndSecond(
-      this.store.getData()[this.store.getDataIndex()]['second'],
-      this.store.getData()[this.store.getDataIndex()]['text'],
+    this.view.clearWords();
+    this.store.second=this.store.data[this.store.dataIndex]['second'];
+    this.view.renderNextWordAndSecond(
+      this.store.data[this.store.dataIndex]['second'],
+      this.store.data[this.store.dataIndex]['text'],
     );
     this.store.initTypingTime();
-    this.store.setTargetTime(this.store.getData()[this.store.getDataIndex()]['second']);
-    this.store.setisPassed(false);
+    this.store.targetTime=this.store.data[this.store.dataIndex]['second'];
+    this.store.isPassed=false;
   };
 }
 

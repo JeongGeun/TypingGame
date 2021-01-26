@@ -2,20 +2,20 @@ import ParentController from './parent-controller';
 
 // 완료 화면의 이벤트를 제어하는 controller
 class CompleteController extends ParentController {
-  constructor(store, render) {
-    super(store, render);
+  constructor(store, view) {
+    super(store, view);
   }
 
   callRenderService = () => {
-    this.render.renderView();
+    this.view.renderView();
     this.addCompleteEvent();
   };
 
   addCompleteEvent = () => {
-    this.render.getRestartBtn().addEventListener('click', this.goToHomePath);
+    this.view.getRestartBtn().addEventListener('click', this.goToHomePath);
   };
   goToHomePath = () => {
-    this.route.changePath({}, '/');
+    this.route.changePath('/', {});
   };
 }
 
