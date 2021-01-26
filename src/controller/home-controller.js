@@ -18,6 +18,8 @@ import ParentController from './parent-controller';
  */
 
 class HomeController extends ParentController {
+  // render 는 동사이기 때문에 this.render.renderView 와 같이 사용될 때 의미가 모호해질 수 있습니다.
+  // render보다는 RenderHomeView 를 생성해서 전달했기 때문에 view라는 단어가 좀더 나아 보입니다.
   constructor(store, render) {
     super(store, render);
   }
@@ -65,11 +67,16 @@ class HomeController extends ParentController {
   //초기 html요소를 세팅해주고 게임을 시작한다.
   startGame = () => {
     this.initializeGame();
+
+    // state에 해당하는 string은 const로 따로 빼서 정의를 하고 변수로 세팅해주는 것이 좀더 안전합니다.
     if (this.store.getState() === 'Ready') {
       this.store.setState('Started');
       this.store.setisPlaying(true);
       this.store.setisPassed(false);
 
+      // 여기도 마찬가지이지만 변수의 property도 고정된 string이기 때문에 const로 정의를 해서 사용하는 것이 좋습니다.
+      // 더욱이 second, text는 store에서 사용되는 것들이니 일관성을 유지하기 위해서는 이 변수들을 Store에 정의를 해두고,
+      // store를 가져다 쓰는 쪽에서 이 변수도 가져와서 사용하는 것이 더욱 안전합니다.
       this.store.setTargetTime(this.store.getData()[this.store.getDataIndex()]['second']);
       this.store.setSecond(this.store.getData()[this.store.getDataIndex()]['second']);
       this.render.showGameView(
@@ -103,7 +110,8 @@ class HomeController extends ParentController {
     3. isPassed가 false이면 시간을 0.1초씩 감소시킨다.
   */
   countDown = () => {
-
+    // 함수 이름을 정의를 할때에는 case를 잘 맞추는 것이 좋습니다.
+    // camelCase이니 getisPassed 보다는 getIsPassed가 가독성이 더욱 좋습니다.
     if (!this.store.getisPassed()) {
       this.store.getTypingTime() < this.store.getTargetTime()
         ? this.store.increaseTypingTime()
