@@ -1,17 +1,29 @@
 import ParentRender from './parent-render';
 import LoadingImage from '../images/loading.gif';
+import { HomeView } from '../view/home';
 
 class RenderHomeView extends ParentRender {
-  constructor(view) {
-    super(view);
+  
+  score: HTMLElement;
+  second: HTMLElement;
+  word: HTMLInputElement;
+  target: HTMLElement;
+  startBtn: HTMLButtonElement;
+  div1: HTMLElement;
+  div2: HTMLElement;
+  LoadingImage: HTMLElement;
+  
+  constructor() {
+    super();
+    this.view = HomeView;
   }
 
   declareHTMLelement = () => {
     this.score = document.getElementById('totalScore');
     this.second = document.getElementById('second');
-    this.word = document.getElementById('word');
+    this.word = document.getElementById('word') as HTMLInputElement;
     this.target = document.getElementById('target');
-    this.startBtn = document.getElementById('startBtn');
+    this.startBtn = document.getElementById('startBtn') as HTMLButtonElement;
     this.div1 = document.getElementById('division1');
     this.div2 = document.getElementById('division2');
   };
@@ -30,11 +42,11 @@ class RenderHomeView extends ParentRender {
     this.LoadingImage = document.getElementById('loadingImage');
     this.initLoadingButton();
   };
-  showGameView = (second, text) => {
+  showGameView = (second: number, text:string) => {
     this.div1.style.display = 'none';
     this.div2.style.display = 'block';
     this.startBtn.innerText = '초기화';
-    this.second.innerText = second;
+    this.second.innerText = `${second}`;
     this.target.innerText = text;
   };
 
@@ -49,8 +61,8 @@ class RenderHomeView extends ParentRender {
     this.word.innerText = '';
   };
 
-  renderNextWordAndSecond = (second, text) => {
-    this.second.innerText = second;
+  renderNextWordAndSecond = (second : number, text: string) => {
+    this.second.innerText = `${second}`;
     this.target.innerText = text;
   };
 
@@ -58,11 +70,11 @@ class RenderHomeView extends ParentRender {
     this.word.value = '';
   };
 
-  setScore = score => {
-    this.score.innerText = score;
+  setScore = (score: number) => {
+    this.score.innerText = `${score}`;
   };
 
-  setSecond = second => {
+  setSecond = (second:number) => {
     this.second.innerText = second.toFixed(2);
   };
 

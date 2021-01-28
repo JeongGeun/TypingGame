@@ -1,5 +1,7 @@
 import ParentController from './parent-controller';
-
+import Store from '../store';
+import RenderHomeView from '../render/render-home'
+import { Word } from '../type'
 //게임 화면에서 일어나는 타이머, 인풋 입력 체크, 게임 종료 체크 등과 같은 기능을 제공
 
 /* 
@@ -17,10 +19,14 @@ import ParentController from './parent-controller';
     3. 데이터를 store를 해서 상태관리를 위한 파일을 분리
  */
 
-class HomeController extends ParentController {
+class HomeController extends ParentController<RenderHomeView> {
   // render 는 동사이기 때문에 this.render.renderView 와 같이 사용될 때 의미가 모호해질 수 있습니다.
   // render보다는 RenderHomeView 를 생성해서 전달했기 때문에 view라는 단어가 좀더 나아 보입니다.
-  constructor(store, view) {
+  //store: Store;
+  //view: RenderHomeView;
+  timeInterval: NodeJS.Timeout;
+  
+  constructor(store: Store, view: RenderHomeView) {
     super(store, view);
   }
   //home화면을 렌더링하고 이벤트를 등록한다.
@@ -41,9 +47,9 @@ class HomeController extends ParentController {
       .then(this.view.hideLoadingImage);
   };
 
-  setData = data => {
-    this.store.data=data;
-    this.store.score=data.length;
+  setData = (data:Word[]) => {
+    this.store.data = data;
+    this.store.score = data.length;
     this.view.setScore(data.length);
   };
   //"시작", "초기화" 버튼의 클릭이벤트와 인풋입력을 감지하여 pass/fail을 결정하는 이벤트를 등록한다.
@@ -53,7 +59,6 @@ class HomeController extends ParentController {
   };
   //게임 시작 시에 html요소들을 초기화한다.
   initializeGame = () => {
-    
     if (this.store.data.length === 0) {
       this.fetchData();
     } else {
@@ -71,24 +76,24 @@ class HomeController extends ParentController {
     const state = this.store.state;
     // state에 해당하는 string은 const로 따로 빼서 정의를 하고 변수로 세팅해주는 것이 좀더 안전합니다.
     if (state === 'Ready') {
-      this.store.state='Started';
-      this.store.isPlaying=true;
-      this.store.isPassed=false;
+      this.store.state = 'Started';
+      this.store.isPlaying = true;
+      this.store.isPassed = false;
 
       // 여기도 마찬가지이지만 변수의 property도 고정된 string이기 때문에 const로 정의를 해서 사용하는 것이 좋습니다.
       // 더욱이 second, text는 store에서 사용되는 것들이니 일관성을 유지하기 위해서는 이 변수들을 Store에 정의를 해두고,
       // store를 가져다 쓰는 쪽에서 이 변수도 가져와서 사용하는 것이 더욱 안전합니다.
-      
-      this.store.targetTime=this.store.data[this.store.dataIndex]['second'];
-      this.store.second=this.store.data[this.store.dataIndex]['second'];
+
+      this.store.targetTime = this.store.data[this.store.dataIndex].second;
+      this.store.second = this.store.data[this.store.dataIndex].second;
       this.view.showGameView(
-        this.store.data[this.store.dataIndex]['second'],
-        this.store.data[this.store.dataIndex]['text'],
+        this.store.data[this.store.dataIndex].second,
+        this.store.data[this.store.dataIndex].text,
       );
       this.view.getWordElement().focus();
       this.startCountDown();
     } else {
-      this.store.state='Ready';
+      this.store.state = 'Ready';
       this.view.hideGameView();
       this.endCountDown();
     }
@@ -117,7 +122,7 @@ class HomeController extends ParentController {
     if (!this.store.isPassed) {
       this.store.typingTime < this.store.targetTime
         ? this.store.increaseTypingTime()
-        : this.store.isPassed=true;
+        : (this.store.isPassed = true);
     }
 
     if (this.store.isPassed) {
@@ -133,7 +138,7 @@ class HomeController extends ParentController {
   checkMatch = event => {
     if (event.keyCode === 13) {
       if (this.view.getWordElement().value === this.view.getTargetElement().innerText) {
-        this.store.isPassed=true;
+        this.store.isPassed = true;
         this.passToNextWords();
       }
       this.view.clearWords();
@@ -145,8 +150,8 @@ class HomeController extends ParentController {
   */
   isFinish = () => {
     if (this.store.dataIndex >= this.store.data.length) {
-      this.store.isPlaying=false;
-      this.store.state='Ready';
+      this.store.isPlaying = false;
+      this.store.state = 'Ready';
       this.endCountDown();
       return true;
     }
@@ -161,10 +166,10 @@ class HomeController extends ParentController {
     const success_time = score === 0 ? 0 : this.store.avgTime / score;
     const message = {
       score: score,
-      time: success_time.toFixed(2),
+      time: parseFloat(success_time.toFixed(2)),
     };
 
-    this.route.changePath('/complete',message);
+    this.route.changePath('/complete', message);
   };
   /*
     모듈명 : passToNextWords
@@ -174,7 +179,7 @@ class HomeController extends ParentController {
   passToNextWords = () => {
     if (this.store.typingTime >= this.store.targetTime) {
       this.store.decreaseScore();
-      this.view.setScore(this.store.getScore());
+      this.view.setScore(this.store.score);
     } else {
       this.store.increaseAvgTime(this.store.typingTime);
     }
@@ -184,14 +189,14 @@ class HomeController extends ParentController {
       return;
     }
     this.view.clearWords();
-    this.store.second=this.store.data[this.store.dataIndex]['second'];
+    this.store.second = this.store.data[this.store.dataIndex].second;
     this.view.renderNextWordAndSecond(
-      this.store.data[this.store.dataIndex]['second'],
-      this.store.data[this.store.dataIndex]['text'],
+      this.store.data[this.store.dataIndex].second,
+      this.store.data[this.store.dataIndex].text,
     );
     this.store.initTypingTime();
-    this.store.targetTime=this.store.data[this.store.dataIndex]['second'];
-    this.store.isPassed=false;
+    this.store.targetTime = this.store.data[this.store.dataIndex].second;
+    this.store.isPassed = false;
   };
 }
 

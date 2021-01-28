@@ -1,4 +1,17 @@
+import { Word } from './type';
+
 class Store {
+  private _data: Word[];
+  private _score: number;
+  private _second: number;
+  private _state: string;
+  private _isPassed: boolean;
+  private _isPlaying: boolean;
+  private _dataIndex: number;
+  private _avgTime: number;
+  private _typingTime: number;
+  private _targetTime: number;
+
   constructor() {
     this._data = [];
     this._score = 0;
@@ -25,35 +38,35 @@ class Store {
   // javascript 스펙 중 getter, setter가 있습니다.
   // https://mygumi.tistory.com/161
   // 좀더 사용하기 편할 꺼에요.
-  set data (data) {
+  set data(data) {
     this._data = data;
-  };
+  }
 
-  set score (score) {
+  set score(score: number) {
     this._score = score;
-  };
+  }
 
-  set state (state) {
+  set state(state: string) {
     this._state = state;
-  };
+  }
 
-  set isPassed (isPassed) {
+  set isPassed(isPassed: boolean) {
     this._isPassed = isPassed;
-  };
+  }
 
-  set isPlaying (isPlaying) {
+  set isPlaying(isPlaying: boolean) {
     this._isPlaying = isPlaying;
-  };
+  }
 
-  set targetTime (time) {
+  set targetTime(time: number) {
     this._targetTime = time;
-  };
+  }
 
-  set second (second) {
+  set second(second: number) {
     this._second = second;
-  };
+  }
 
-  increaseAvgTime = time => {
+  increaseAvgTime = (time: number) => {
     this._avgTime = this._avgTime + time;
   };
 
@@ -72,16 +85,36 @@ class Store {
   decreaseSecond = () => {
     this._second = this._second - 0.1;
   };
-  get data() { return this._data };
-  get score() { return this._score };
-  get state() { return this._state };
-  get second() { return this._second };
-  get isPassed() { return this._isPassed };
-  get isPlaying() { return this._isPlaying };
-  get dataIndex() { return this._dataIndex };
-  get avgTime() { return this._avgTime };
-  get typingTime() { return this._typingTime };
-  get targetTime() { return this._targetTime };
+  get data():Word[] {
+    return this._data;
+  }
+  get score():number {
+    return this._score;
+  }
+  get state():string {
+    return this._state;
+  }
+  get second():number {
+    return this._second;
+  }
+  get isPassed():boolean {
+    return this._isPassed;
+  }
+  get isPlaying():boolean {
+    return this._isPlaying;
+  }
+  get dataIndex():number {
+    return this._dataIndex;
+  }
+  get avgTime() :number{
+    return this._avgTime;
+  }
+  get typingTime():number {
+    return this._typingTime;
+  }
+  get targetTime():number {
+    return this._targetTime;
+  }
 }
 
 export default Store;

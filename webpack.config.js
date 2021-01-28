@@ -4,14 +4,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-  //devtool: 'inline-source-map',
-  entry: './src/index.js',
+  devtool: 'inline-source-map',
+  entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js',
   },
+  resolve: {
+    extensions:[".js",".jsx",".ts",".tsx"], 
+  },
   module: {
     rules: [
+      {
+        test: /\.ts$/, use: ['awesome-typescript-loader'], exclude: /(node_modules)|(public)/
+      },
       {
         test: /\.js$/,
         include: path.join(__dirname),
